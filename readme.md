@@ -291,12 +291,383 @@ Can be categorized by:
     - XOR 
     - NOT
 
+### **Instructions**
+- **Comment**
+
+    //This is a comment    
+    /* This is a comment */
+
+    ///<'summary'>
+    /// This property always returns a value &lt; 1.
+    /// 
+    ///<'/summary'>
+    
+- **Compoud**
+
+    ```
+    begin
+        statement 1;
+        statement 2;
+        statement 3;
+        ...
+    end;
+    ```
+- **Conditional**
+
+    ```
+    if a > b then
+        c := a - b;
+
+    //Or:
+
+    if a > b then begin
+        c := a - b;
+        Message('%1', c);
+    end;
+    ```
+
+    - If-Else Sentence:
+
+    ```
+    if a > b then
+        c := a - b
+    else
+        c := a + b;
+    
+    //Or:
+
+    if a > b then begin
+        c := a - b;
+        Message('%1', c);
+    end
+    else begin
+        c := a + b;
+        Message('%1', c);
+    end;
+    ```
+    - Nested If
+    ```
+    begin
+    if Amount <> 0 then
+        if Amount > 0 then
+            Sales := Sales + Amount
+        else
+            if Reason = Reason::Return then
+                if ReasonForReturn = ReasonForReturn::Defective then
+                    Refund := Refund + Amount
+                else
+                    Credits := Credits + Amount
+            else
+                Sales := Sales - Amount;
+    end;
+    ```
+    - Case Statement
+
+    The case statement can use an else block that will be run when no other blocks are run. Because you can only run one statement for each block with a case statement, you have to use compound statements to run more statements simultaneously.   
+    Depending on the value of Document Type the case statement will run some statements.
+    ```
+    var
+        a: Integer;
+    begin
+        case "Document Type" of
+            "Document Type"::Quote:
+                a := 1 + 1;
+            "Document Type"::Order:
+                a := 2 + 1;
+            "Document Type"::Invoice:
+                begin
+                    // Some statement 1;
+                    // Some statement 2;
+                    // Some statement 3;
+                    a := 3 + 1;
+                end;
+            "Document Type"::"Return Order":
+                if Reason = Reason::Return then begin
+                    // Some statement 1;
+                    // Some statement 2;
+                    // Some statement 3;
+                    a := 4 + 1;                
+                end;
+        else
+            a := 5 + 1;//Last option 
+        end;
+    end;
+    ```
+    - Preprocessor Directives in AL
+
+        The following conditional preprocessor directives are supported in AL.
+
+        - #if - Specifies the beginning of a conditional clause. The #endif clause ends it. Compiles the code between the directives if the specified symbol being checked is defined.
+        - #else - Specifies a compound conditional clause. If none of the preceding clauses evaluates to true, the compiler will evaluate code between #else and #endif.
+        - #elif - Combines else and if. If #elif is true the compiler evaluates all code between #elif and the next conditional directive.
+        - #endif - Specifies the end of a conditional clause that begins with #if.
+        - #define - Defines a symbol that can be used to specify conditions for a compilation. For example, #define DEBUG. The scope of the symbol is the file that it was defined in.
+        - #undef - Undefines a symbol.
+
+        Symbols can be defined globally in the app.json file. A symbol can also be defined using the #define directive in code, but if symbols are defined in the **app.json** file, they can be used globally.
+        ```
+        "preprocessorSymbols": [ "DEBUG" ]
+        ```
+
+        al-code using DEBUG symbol
+        ```
+        #if DEBUG
+            trigger OnOpenPage()
+            begin
+                Message('Only in debug versions');
+            end;
+        #endif
+        ```
+
+        There is a new suppressWarnings property in the app.json manifest so that you can suppress a comma-separated list of warning IDs when you compile the extension:
+
+        ```
+        "suppressWarnings": [Warning ID,Warning ID2,...]
+        ```
+
+        Local
+        Directives is a new construct in the AL language that specifies how the AL compiler treats an enclosed section of code. The same concept is known in other languages. The specific directive instructions must be supported by the compiler. You can't create custom preprocessing instructions.
+
+        One of the new directives is a warning pragma, which you can set around a code section to suppress a comma-separated list of warnings only in that enclosure.
+        If no end pragma closure is provided, it will be the rest of the file.
+
+        ```
+        #pragma warning disable warning-list
+        #pragma warning restore warning-list
+        ```
+
+- **Repetitive**
+
+if you want to stop the cycle use the **break** expression
+  - For-to-do
+
+        
+        var
+            intCount: Integer;
+            total: Integer;
+        begin
+            for intCount := 1 to 5 do
+                total := total + 3;
+        end;
+
+        //Or:
+
+        var
+            intCount: Integer;
+            numberOfLoops: Integer;
+            total: Integer;
+        begin
+            numberOfLoops := 5;
+            for intCount := 1 to numberOfLoops do
+                total := total + 3;
+        end;
+        
+
+- For-downto-do
+
+        
+        var
+            intCount: Integer;
+            totalSales: Integer;
+            numberSales: Integer;
+            sales: array[5] of Integer;
+        begin
+        GetSales(sales);
+
+            for intCount := 5 downto 1 do begin
+                totalSales := totalSales + sales[intCount];
+                numberSales := numberSales + 1;
+            end;
+        end;
+        
+        
+- Foreach-in-do
+
+
+        var
+            stringList: List of [Text[20]];
+            stringItem: Text[20];
+        begin
+            foreach stringItem in stringList do
+                Message(stringItem);
+        end;
+
+
+- While-do
+        
+        var
+            index: Integer;
+            totalSales: Integer;
+            sales: array[5] of Integer;
+        begin
+            GetSales(sales);
+            while totalSales < 8 do begin
+                index := index + 1;
+                totalSales := totalSales + sales[index];
+            end;
+        end;
+        ```
+    - Repeat-until
+
+    ```
+    var
+        index: Integer;
+        totalSales: Integer;
+        sales: array[5] of Integer;
+    begin
+        GetSales(sales);
+        repeat
+            index := index + 1;
+            totalSales := totalSales + sales[index];
+        until totalSales >= 8;
+    end;
+
+    //Or:
+
+    var
+        myTable: Record MyTable;
+    begin
+        myTable.FindSet();
+        repeat
+            myTable.Amount := 100;
+        until myTable.Next() = 0;
+    end;
+    ```    
+
+- With Statement
+
+    This statement reduce the use of your recrod variables:
+    ```
+    var
+        myTable: Record MyTable;
+    begin
+        myTable."No." := 1;
+        myTable.Amount := 100;
+        myTable.Credits := 10;
+        myTable."Document Type" := myTable."Document Type"::Invoice;
+        myTable.Reason := myTable.Reason::Return;
+        myTable.Refund := 100;
+    end;   
+
+    //Instead you can write this (Not recomended use),
+    var
+        myTable: Record MyTable;
+    begin
+        with myTable do begin
+            "No." := 1;
+            Amount := 100;
+            Credits := 10;
+            "Document Type" := "Document Type"::Invoice;
+            Reason := Reason::Return;
+            Refund := 100;
+        end;
+    end;
+
+    // Safe version
+    codeunit 50140 MyCodeunit
+    {
+        procedure DoStuff()
+        var
+            Customer: Record Customer;
+        begin
+            // Do some work on the Customer record.
+            Customer.Name := 'Foo';
+
+            if IsDirty() then 
+                Customer.Modify();
+        end; 
+
+        local procedure IsDirty(): Boolean;
+        begin
+            exit(false);
+        end;
+    }
+    ``` 
+
+    The procedures with the same name in differents files have priority??
+
+### Pages
+
+    page 50143 ImplicitWith
+    {
+        SourceTable = Customer;
+
+        layout
+        {
+            area(Content)
+            {
+                field("No."; "No.") { }
+                field(Name; Name)
+                {
+                    trigger OnValidate()
+                    begin
+                        Name := 'test';
+                    end;
+                }
+            }
+        }
+
+        trigger OnInit()
+        begin
+            if IsDirty() then Insert()
+        end;
+
+        local procedure IsDirty(): Boolean
+        begin
+            exit(Name <> '');
+        end;
+    }
+
+### Interaction functions
+
+- Message
+    Is used to comunicate information to users
+
+    ```
+    Message(string [,Value1, ...]);
+    Message('Hello World');
+
+    //Or:
+
+    var
+        MyInt: Integer;
+        TheValueOfTxt: Label 'The value of %1 is %2';
+    begin
+        MyInt := 5;
+        Message(TheValueOfTxt, 'MyInt', MyInt);
+        // Displays: The value of MyInt is 5
+    end;
+    ```
+- Confirm
+
+    You can use the Confirm function based on a string, which is generated from the question that you ask the user. The message is displayed with a Yes and a No button.
+    ```
+    Ok := Dialog.Confirm(string [,Default] [,Value1, ...]);
+
+    //If clause:
+    
+    if Confirm('Are you sure you want to delete?') then
+        Message('OK')
+    else
+        Message('Not OK');
+
+    //No button have the default focus, add false as a parameter:
+
+    if Confirm('Are you sure you want to delete?', false) then
+        Message('OK')
+    else
+        Message('Not Ok');
+    ```
+
+- StrMenu
+
+- Error
 
 ### Tables
 You can handle data with AL, the basic struct for a table is next:
 
 ```
-table iod MyTable {
+table id MyTable {
     DataClassification = ToBeClassified;
     
     fields
@@ -345,5 +716,15 @@ table iod MyTable {
 #### Short cuts
 * ttable -> basic struct for a table.
 * tpage -> basic struct for a page.
+    - tpagefield -> basic struct for a field page.
 * tpageext -> basic struct for a extension page.
 * tcodeunit -> basic struct for a codeunit
+
+#### Links
+
+- Shortcuts VS CODE | https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf |
+
+
+### Doubts
+With Statement Symbols Search |
+https://learn.microsoft.com/es-mx/training/modules/al-statements/4-repetitive |
